@@ -9,7 +9,6 @@
   <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
 </head>
 <body>
-  <header><img src="https://kusacurrency.com/wp-content/uploads/2019/05/dollcostheader2.jpg" alt="仮想通貨の積立投資シミュレータ" /></header>
   <div class="wrapper">
     <h2>1STEP：銘柄を選ぶ<img src="https://kusacurrency.com/wp-content/uploads/2019/05/scienticstCat2.png"/></h2>
     <div class="content crypts loading" id="loading-crypts">
@@ -60,7 +59,6 @@
       <div class="coinmarketcap-currency-widget" data-currencyid="52" data-base="JPY" data-secondary="" data-ticker="true" data-rank="false" data-marketcap="false" data-volume="false" data-stats="USD" data-statsticker="false"></div>
       <div class="coinmarketcap-currency-widget" data-currencyid="2" data-base="JPY" data-secondary="" data-ticker="true" data-rank="false" data-marketcap="false" data-volume="false" data-stats="USD" data-statsticker="false"></div>
     </div>
-
   </div>
 </body>
 <script type="text/javascript">
@@ -77,7 +75,7 @@ const BegginingOfMonth = year+"年"+month+"月"+'1日';
 //本日の仮想通貨の価格
 ///////////////////
 let catchCoinmarketPrice = [];
-let cryptsPrice = [];
+let todayPrice = [];
 
 const getCryptoPrice = function(){
   if(catchCoinmarketPrice.length < 8){
@@ -99,12 +97,12 @@ const getCryptoPrice = function(){
     let elementText = element.innerText;
     let textRemove = elementText.replace(',', '');
     let textSplit = match.exec(textRemove);
-    cryptsPrice.push(textSplit);
+    todayPrice.push(textSplit);
   });
-    console.log(cryptsPrice);
+    console.log(todayPrice);
     let loading  = document.getElementById('loading-crypts');
     loading.classList.remove('loading');
-    return cryptsPrice;
+    return todayPrice;
 }
 
 window.onload = getCryptoPrice();
@@ -139,25 +137,25 @@ function setCrypto(crypto){
   switch(crypto){
     case 'btc':
       priceHistory = BTCpriceHistory;
-      cryptoChoosedPrice = cryptsPrice[0];//現在価格
+      cryptoChoosedPrice = todayPrice[0];//現在価格
       cryptoName = 'BTC';
       break;
 
     case 'eth':
       priceHistory = ETHpriceHistory;
-      cryptoChoosedPrice = cryptsPrice[1];
+      cryptoChoosedPrice = todayPrice[1];
       cryptoName = 'ETH';
       break;
 
     case 'xrp':
       priceHistory = XRPpriceHistory;
-      cryptoChoosedPrice = cryptsPrice[2];
+      cryptoChoosedPrice = todayPrice[2];
       cryptoName = 'XRP';
       break;
 
     case 'ltc':
       priceHistory = LTCpriceHistory;
-      cryptoChoosedPrice = cryptsPrice[3];
+      cryptoChoosedPrice = todayPrice[3];
       cryptoName = 'LTC';
       break;
     }
@@ -326,6 +324,9 @@ function buttonCheck(Switch){
     plusAnalysis.innerHTML = '利益がプラスの期間は' + plusTerm + 'ヶ月間でした。';
     minusAnalysis.innerHTML = '利益がマイナスの期間は' + (profitPercentData.length - plusTerm - 1) + 'ヶ月間でした。';
 
+    //リロードした際に再度disabledにしておくため
+    document.getElementById('know-profit').disabled = true;
+
     //chartJSの記述
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
@@ -352,16 +353,19 @@ function buttonCheck(Switch){
 
       //Twitterシェアボタンを生成する
         //Twitterへのシェア内容
-      const ShareURL = '';
-      const TweetContent = '';
-      const Account = '';
-      const HashTags = '';
+
+      const ShareURL = `https://kusacurrency.com/post_lp/dollar-cost-averaging/`;
+      const ShareText = today + 'まで' + termChoosed + 'ヶ月間、' + cryptoName + 'で月' + (investChoosed * 0.0001) + '万円を積立投資していた場合の利益率は' + profitPercentCalNow.toFixed(1)+ '%で、利益額は' + profitCalNow.toFixed(0) + '円です';
+      const UserId = '@CryptoKusacoin';
+      const HashTags = '仮想通貨の積立投資シミュレータ';
+      const ShareTwitter = 'https://twitter.com/intent/tweet?url='+encodeURIComponent(ShareURL)+'&text='+encodeURIComponent(ShareText)+'&hashtags='+encodeURIComponent(HashTags)+'&related='+encodeURIComponent(UserId);
 
       let makeTwitterButton = document.createElement('a');
 
       makeTwitterButton.id = ('twitter');
-      makeTwitterButton.href = (ShareURL);
-      makeTwitterButton.innerHTML = 'この結果をTwitterでシェアする';
+      makeTwitterButton.href = (ShareTwitter);
+      makeTwitterButton.target = ('_blank');
+      makeTwitterButton.innerHTML = '結果をTwitterでシェアする';
       makeTwitterButton.classList.add('chart-description')
       document.getElementById('button-add').appendChild(makeTwitterButton);
 

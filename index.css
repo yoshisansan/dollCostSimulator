@@ -64,8 +64,7 @@ body{
 }
 
 header img{
-
-	width: 100vw;
+	width: 100%;
 }
 
 .wrapper{
@@ -448,6 +447,21 @@ img {
 .crypto-selected img {
 	margin: -11px !important;
 }
+
+#main .article header{
+	padding: initial;
+}
+
+#content.lp-wrap .hentry header{
+	padding: initial;
+	padding: .8rem;
+}
+
+.single-title, .page-title, .entry-title{
+	margin: initial;
+	margin: .2em 0;
+}
+
 
 @media only screen and (max-width: 767px)  {
 		#content.lp-wrap h2{
