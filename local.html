@@ -90,10 +90,10 @@ const getCryptoPrice = function(){
       }
   }
     let elementTagRemove = oddElement.map(function(element){
-    let elementText = element.innerText;
-    let textRemove = elementText.replace(',', '');
-    let textSplit = match.exec(textRemove);
-    todayPrice.push(textSplit);
+      let elementText = element.innerText;
+      let textRemove = elementText.replace(/','/g , '');
+      let textSplit = match.exec(textRemove);
+      todayPrice.push(textSplit);
   });
     console.log(todayPrice);
     let loading  = document.getElementById('loading-crypts');

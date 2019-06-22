@@ -1,5 +1,4 @@
 // 軽量化とパクリ防止できるサイト http://tm-webtools.com/Tools/JsMinify
-
 <!DOCTYPE html>
 <html lang="ja">
   <head>
@@ -106,7 +105,7 @@ var getCryptoPrice = function(){
   }
     var elementTagRemove = oddElement.map(function(element){
     var elementText = element.innerText;
-    var textRemove = elementText.replace(',', '');
+    var textRemove = elementText.replace(/,/g, '');
     var textSplit = match.exec(textRemove);
     todayPrice.push(textSplit);
   });
