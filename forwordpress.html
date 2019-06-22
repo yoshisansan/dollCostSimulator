@@ -1,0 +1,408 @@
+// 軽量化とパクリ防止できるサイト http://tm-webtools.com/Tools/JsMinify
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=1">
+    <title>仮想通貨の積立投資シミュレータ</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
+
+    <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+    <meta property="og:title" content="仮想通貨の積立投資シミュレータ" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://kusacurrency.com/post_lp/dollar-cost-averaging/" />
+    <meta property="og:image" content="https://kusacurrency.com/post_lp/dollar-cost-averaging/" />
+    <meta property="og:site_name" content="ビットコインバーゲン" />
+    <meta property="og:description" content="「 仮想通貨の積立投資シミュレータ 」を自作してみました。過去から現在までの価格データを取得して、分析してグラフ化します。価格相場変動が激しいと言われる仮想通貨でもしも積立投資を行なっていたら、どれくらいのリスク感だったのかをイメージしやすくなるかと思います。" />
+  </head>
+<body>
+  <div class="wrapper">
+    <h2>1STEP：銘柄を選ぶ<img src="https://kusacurrency.com/wp-content/uploads/2019/05/scienticstCat2.png"/></h2>
+    <div class="content crypts loading" id="loading-crypts">
+      <div class="crypto-select" id="btc" onclick="setCrypto(id)"><img src="https://kusacurrency.com/wp-content/uploads/2019/05/BTCcard2.png" /></div>
+      <div class="crypto-select" id="eth" onclick="setCrypto(id)"><img src="https://kusacurrency.com/wp-content/uploads/2019/05/ETHcard.png" /></div>
+      <div class="crypto-select" id="xrp" onclick="setCrypto(id)"><img src="https://kusacurrency.com/wp-content/uploads/2019/05/XRPcard.png" /></div>
+      <div class="crypto-select" id="ltc" onclick="setCrypto(id)"><img src="https://kusacurrency.com/wp-content/uploads/2019/05/LTCcard.png" /></div>
+    </div>
+    <h2>2STEP：月の投資金額を選ぶ<img src="https://kusacurrency.com/wp-content/uploads/2019/05/scienticstCat2.png"/></h2>
+    <div class="content assets">
+      <div class="asset-select" onclick="setYen(10000)" id="10000yen"><p>1万円</p></div>
+      <div class="asset-select" onclick="setYen(30000)" id="30000yen"><p>3万円</p></div>
+      <div class="asset-select" onclick="setYen(50000)" id="50000yen"><p>5万円</p></div>
+      <div class="asset-select" onclick="setYen(100000)" id="100000yen"><p>10万円</p></div>
+      <div class="asset-select" onclick="setYen(200000)" id="200000yen"><p>20万円</p></div>
+      <div class="asset-select" onclick="setYen(500000)" id="500000yen"><p>50万円</p></div>
+    </div>
+    <h2>3STEP：投資期間を選ぶ<img class="wow" src="https://kusacurrency.com/wp-content/uploads/2019/05/scienceCat3.png"/></h2>
+    <div class="content terms">
+      <div class="term-select" onclick="setTerm(6)" id="6months"><p>6ヶ月</p></div>
+      <div class="term-select" onclick="setTerm(12)" id="12months"><p>12ヶ月</p></div>
+      <div class="term-select" onclick="setTerm(18)" id="18months"><p>18ヶ月</p></div>
+      <div class="term-select" onclick="setTerm(24)" id="24months"><p>24ヶ月</p></div>
+      <div class="term-select" onclick="setTerm(30)" id="30months"><p>30ヶ月</p></div>
+      <div class="term-select" onclick="setTerm(36)" id="36months"><p>36ヶ月</p></div>
+    </div>
+    <button disabled class="result-button" id="know-profit" type="submit">結果を見る</button>
+    <div class="results" id="button-add">
+      <div class="result" id="today-show"></div>
+      <div class="result"><p id="term"></p></div>
+      <div class="result" id="percentNow"></div>
+      <div class="result" id="profitNow"></div>
+      <div class="result" id="investmentSumNow"></div>
+      <div class="result" id="beggining-month"></div>
+      <div class="result" id="percent"></div>
+      <div class="result" id="profit"></div>
+      <div class="result" id="investmentSum"></div>
+      <div class="chartResult">
+        <canvas id="myChart"></canvas>
+        <p class="chart-description" id="plusAnalysis"></p>
+        <p class="chart-description" id="minusAnalysis"></p>
+      </div>
+    </div>
+    <h2>現在価格</h2>
+    <div class="now-price">
+      <div class="coinmarketcap-currency-widget" data-currencyid="1" data-base="JPY" data-secondary="" data-ticker="true" data-rank="false" data-marketcap="false" data-volume="false" data-stats="USD" data-statsticker="false"></div>
+      <div class="coinmarketcap-currency-widget" data-currencyid="1027" data-base="JPY" data-secondary="" data-ticker="true" data-rank="false" data-marketcap="false" data-volume="false" data-stats="USD" data-statsticker="false"></div>
+      <div class="coinmarketcap-currency-widget" data-currencyid="52" data-base="JPY" data-secondary="" data-ticker="true" data-rank="false" data-marketcap="false" data-volume="false" data-stats="USD" data-statsticker="false"></div>
+      <div class="coinmarketcap-currency-widget" data-currencyid="2" data-base="JPY" data-secondary="" data-ticker="true" data-rank="false" data-marketcap="false" data-volume="false" data-stats="USD" data-statsticker="false"></div>
+
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+
+//本日の日付
+///////////////////
+var now = new Date();
+var year = now.getFullYear();
+var month = now.getMonth() + 1;//getMonthは0~11のため+1が入る
+var day = now.getDate();
+var today = year+"年"+month+"月"+day+"日";
+var BegginingOfMonth = year+"年"+month+"月"+'1日';
+
+//本日の仮想通貨の価格
+///////////////////
+var catchCoinmarketPrice = [];
+var todayPrice = [];
+
+var getCryptoPrice = function(){
+  if(catchCoinmarketPrice.length < 8){
+      catchCoinmarketPrice = document.querySelectorAll("div.coinmarketcap-currency-widget > div > div > div > span");
+      setTimeout(getCryptoPrice, '1000');
+      return;
+    }
+
+  var match = /^\d+\.?\d{2}/;
+  var oddElement = [];
+  var textSplit = '';
+
+  for(i=0;catchCoinmarketPrice.length > i;i++){
+      if((i % 2) == 1){
+        oddElement.push(catchCoinmarketPrice[i]);
+      }
+  }
+    var elementTagRemove = oddElement.map(function(element){
+    var elementText = element.innerText;
+    var textRemove = elementText.replace(/,/g, '');
+    var textSplit = match.exec(textRemove);
+    todayPrice.push(textSplit);
+  });
+    var loading  = document.getElementById('loading-crypts');
+    loading.classList.remove('loading');
+    return todayPrice;
+}
+
+window.onload = getCryptoPrice();
+
+//変更したいDOMの準備と変数宣言
+///////////////////
+var cryptoSelector = document.getElementsByClassName('crypto-select');
+var assetSelector = document.getElementsByClassName('asset-select');
+var termSelector = document.getElementsByClassName('term-select');
+
+var cryptoSwitch = '';
+var assetSwitch = '';
+var termSwitch = '';
+
+var BTCpriceHistory = [45747,63479,64986,60250,49704,42474,36984,44891,38346,25471,30400,29331,28164,28572,32249,35344,27907,28285,37999,46452,51803,44728,49340,46911,47669,58788,69451,63747,59523,61621,73528,85385,112671,109532,133085,119946,150066,253478,279645,316561,517053,488629,731952,1147648,1590022,1117811,1107768,744075,1011556,816151,709260,869200,782960,752611,713571,457421,410527,376819,429270,454915,596306,928375];
+var ETHpriceHistory = [164,88,111,108,112,281,712,1283,933,1562,1284,1214,1207,1334,1149,984,933,1212,1787,5600,8828,25575,32911,22567,42170,33942,34747,50099,85151,122224,91311,42208,73308,62965,50359,48541,31508,26515,22310,12889,14619,11667,15242,15676,18074,29066];
+var XRPpriceHistory = [0.548,0.422,0.383,0.533,0.508,0.509,0.531,1.330,2.927,1.678,1.553,0.933,0.959,1.027,1.386,1.048,0.956,0.661,0.565,0.517,0.726,0.775,0.893,0.832,0.724,0.631,0.687,0.606,0.622,0.893,0.859,0.769,0.763,0.712,0.623,2.434,5.741,27.022,29.490,18.525,28.131,22.244,22.756,28.172,258.693,126.756,96.444,54.597,91.666,66.689,51.543,48.731,37.267,66.339,50.667,41.208,38.625,33.847,35.095,34.262,34.490,47.504];
+var LTCpriceHistory = [1117,1112,908,775,505,490,410,424,326,221,221,198,172,203,500,576,345,361,460,446,418,372,389,365,389,515,433,415,393,389,419,447,506,460,426,745,1748,2807,4533,4743,7792,6206,6334,9903,26102,17872,21667,12421,16220,12843,9016,8994,6862,6946,5598,3652,3337,3454,5150,6734,8280,12395];
+var priceHistory = BTCpriceHistory;//初期選択状態のためBTC価格を代入
+
+var cryptoChoosed = 0;
+var cryptoName = '';
+var investChoosed = 10000;//初期選択状態の価格のため事前に代入
+var termChoosed = 0;
+var termStart = '';
+var termMonth = 0;
+
+//銘柄の選択
+///////////////////
+function setCrypto(crypto){
+
+  switch(crypto){
+    case 'btc':
+      priceHistory = BTCpriceHistory;
+      cryptoChoosedPrice = todayPrice[0];//現在価格
+      cryptoName = 'BTC';
+      break;
+
+    case 'eth':
+      priceHistory = ETHpriceHistory;
+      cryptoChoosedPrice = todayPrice[1];
+      cryptoName = 'ETH';
+      break;
+
+    case 'xrp':
+      priceHistory = XRPpriceHistory;
+      cryptoChoosedPrice = todayPrice[2];
+      cryptoName = 'XRP';
+      break;
+
+    case 'ltc':
+      priceHistory = LTCpriceHistory;
+      cryptoChoosedPrice = todayPrice[3];
+      cryptoName = 'LTC';
+      break;
+    }
+
+    //初期選択時
+    if(cryptoSwitch){
+      document.getElementById(cryptoSwitch).classList.remove('crypto-selected');
+    }
+    document.getElementById(crypto).classList.add('crypto-selected');
+    cryptoSwitch = crypto;
+    buttonCheck(termSwitch);
+}
+
+//投資金額の選択
+///////////////////
+function setYen(yen){
+  investChoosed = yen;
+
+  if(assetSwitch){
+    document.getElementById(assetSwitch + 'yen').classList.remove('asset-selected');
+  }
+  document.getElementById(yen + 'yen').classList.add('asset-selected');
+  assetSwitch = yen;
+  buttonCheck(termSwitch);
+}
+
+//投資期間の選択
+///////////////////
+function setTerm(span){
+  termChoosed = span;
+
+  //初期選択時
+  if(termSwitch){
+      document.getElementById(termSwitch + 'months').classList.remove('term-selected');
+  }
+  document.getElementById(span + 'months').classList.add('term-selected');
+  termSwitch = span;
+
+  buttonCheck(termSwitch);
+  //投資開始日を算出する処理
+  var HowLongYear = Math.floor(span / 12);
+
+  if((span%12) == 0 ){
+    termStart = (year - HowLongYear)+"年"+ (month +1) +"月1日";
+    return;
+  }
+
+  if(HowLongYear > 0){
+    var DifferenceMonth = span - (HowLongYear * 12);
+
+    if(DifferenceMonth > month){
+          HowLongYear += 1;//１年前を跨ぐ
+          termMonth = 12 - (DifferenceMonth - (month + 1));
+          termStart = (year - HowLongYear)+"年"+termMonth+"月1日";
+          return;
+      }
+        termMonth = (month + 1) - DifferenceMonth;
+        termStart = (year - HowLongYear)+"年"+termMonth+"月1日";
+        return;
+    }
+
+  if(span > month){
+      termMonth = 12 - (span - (month + 1));//当月も含まれるため+1
+      HowLongYear = 1;
+      termStart = (year - HowLongYear) +"年"+termMonth+"月1日";
+      return;
+    }
+    termMonth = (month + 1) - span;//当月も含まれるため+1
+    termStart = year+"年"+termMonth+"月1日";
+
+}
+
+//３STEPを選択後にボタンを有効化する処理
+function buttonCheck(Switch){
+  if(termSwitch && assetSwitch && cryptoSwitch){
+      document.getElementById('know-profit').disabled = false;
+  }
+}
+
+//計算処理
+///////////////////
+  var investSum = 0;
+  var storeCrypto = 0;
+  var assetJpyTotal = 0;
+  var assetJpyTotalNow = 0;
+  var profitCal = 0;
+  var profitPercentCal = 0;
+  var profitCalNow = 0;
+  var profitPercentCalNow = 0;
+
+  //chartJSに必要なデータ
+  var profitPercentData = [];
+  var investTerm = [];
+  var plusTerm = 0;
+    //resultへの書き込み用の変数宣言
+  var begginingMonth = document.getElementById('beggining-month');
+  var todayShow = document.getElementById('today-show');
+
+  var percent = document.getElementById('percent');
+  var percentNow = document.getElementById('percentNow');
+  var profit = document.getElementById('profit');
+  var profitNow = document.getElementById('profitNow');
+  var investmentSum = document.getElementById('investmentSum');
+  var investmentSumNow = document.getElementById('investmentSumNow');
+  var term = document.getElementById('term');
+  var getResult = document.getElementById('know-profit');
+
+  var plusAnalysis = document.getElementById('plusAnalysis');
+  var minusAnalysis = document.getElementById('minusAnalysis');
+
+    //resultへ出力する計算処理
+  getResult.onclick = function(){
+    selectHistory = priceHistory.slice(-termChoosed);//マイナスは最後から◯番目の中身を取り出すため
+    var cal = selectHistory.map(function(num){
+        investSum += investChoosed;
+        storeCrypto += (investChoosed / num);
+        assetJpyTotal = storeCrypto * num;
+        profitCal = assetJpyTotal - investSum;
+        profitPercentCal = ((assetJpyTotal / investSum) * 100) - 100;
+        profitPercentData.push(profitPercentCal.toFixed(2));//chartJS用データ
+    });
+    for(i=1;profitPercentData.length >= i;i++){
+      if(profitPercentData[i - 1] > 0){
+        plusTerm += 1;//利益率がプラスの期間を計算
+      }
+      investTerm.push(i + 'ヶ月目');//chartJSのx軸へ表示する文字列
+    }
+
+
+      //現在価格から本日の損益を出力する計算処理
+      ///////////////////
+    assetJpyTotalNow = cryptoChoosedPrice * storeCrypto;
+    profitCalNow = assetJpyTotalNow - investSum;
+    profitPercentCalNow = ((assetJpyTotalNow / investSum) * 100) - 100;
+    investTerm.push(today);
+    profitPercentData.push(profitPercentCalNow.toFixed(2));
+
+
+    //文章を出力する処理。追記予定：現在のBTC価格はです。
+    ///////////////////
+    term.innerHTML = '仮に' + termStart + '~' + BegginingOfMonth + '(' + termChoosed + 'ヶ月)' + '<br/>' + 'の間で毎月１日に' + cryptoName + 'で' + investChoosed + '円を投資していた場合の' + '投資結果(' + today + '現在の時点)です。';
+
+      //シミュレーション当日の損益表記
+    percentNow.innerHTML = '利益率：' + profitPercentCalNow.toFixed(1) + '%';
+    profitNow.innerHTML = '利益総額：' + profitCalNow.toFixed(0) + '円' + '（保有している資産総額は' + assetJpyTotalNow.toFixed(0) +'円です。）';
+    investmentSumNow.innerHTML = '投資総額：' + investSum + '円';
+      //直近の月初の損益表記
+    begginingMonth.innerHTML = BegginingOfMonth + ' 時点での損益';
+    todayShow.innerHTML = today + ' 時点での損益';
+    percent.innerHTML = '利益率：' + profitPercentCal.toFixed(1) + '%';
+    profit.innerHTML = '利益総額：' + profitCal.toFixed(0) + '円' + '（保有している資産総額は' + assetJpyTotal.toFixed(0) +'円です。）';
+    investmentSum.innerHTML = '投資総額：' + investSum + '円';
+      //ChartJSグラフ関連コメント
+    plusAnalysis.innerHTML = '利益がプラスの期間は' + plusTerm + 'ヶ月間でした。';
+    minusAnalysis.innerHTML = '利益がマイナスの期間は' + (profitPercentData.length - plusTerm - 1) + 'ヶ月間でした。';
+
+    //リロードした際に再度disabledにしておくため
+    document.getElementById('know-profit').disabled = true;
+
+    //chartJSの記述
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+    labels: investTerm,
+    datasets: [{
+    label: '利益率の遷移',
+    data: profitPercentData,
+    backgroundColor: "rgba(153,255,51,0.4)"
+    },]
+    }
+    });
+  };
+
+  //結果を見るボタンクリック後に消す(onclick=()を効かせられなかったため)
+  ///////////////////
+
+    var hideResultButton = document.getElementById('know-profit');
+    hideResultButton.addEventListener('click', RemoveAddButton);
+
+    //safariの２回読み込み対策
+    var btnCount = 0;
+
+    function RemoveAddButton(e){
+
+      document.getElementById('know-profit').classList.add('hide-button');
+      document.getElementById('know-profit').classList.remove('result-button');
+
+      if(btnCount == 0){
+        TwitterBtn();
+        ResultBtn();
+        btnCount = 1;
+      }
+
+        //もう一回シミュレートするボタンを押すとトップへ戻る
+        document.getElementById('resimulate-button').onclick = function(e) {
+            location.reload();
+            window.scrollTo(0, 0);
+            // イベントの初期動作を停止
+            if (e.preventDefault) {
+                e.preventDefault();
+            } else {
+                e.returnValue = false;
+            }
+        };
+    }
+
+    function TwitterBtn(){
+      //Twitterシェアボタンを生成する
+        //Twitterへのシェア内容
+      var ShareURL = `https://kusacurrency.com/post_lp/dollar-cost-averaging/`;
+      var ShareText = today + 'まで' + termChoosed + 'ヶ月間、' + cryptoName + 'で月' + (investChoosed * 0.0001) + '万円を積立投資していた場合の利益率は' + profitPercentCalNow.toFixed(1)+ '%で、利益額は' + profitCalNow.toFixed(0) + '円です';
+      var UserId = '@CryptoKusacoin';
+      var HashTags = '仮想通貨の積立投資シミュレータ';
+      var ShareTwitter = 'https://twitter.com/intent/tweet?url='+encodeURIComponent(ShareURL)+'&text='+encodeURIComponent(ShareText)+'&hashtags='+encodeURIComponent(HashTags)+'&related='+encodeURIComponent(UserId);
+
+      var makeTwitterButton = document.createElement('a');
+
+      makeTwitterButton.id = ('twitter');
+      makeTwitterButton.href = (ShareTwitter);
+      makeTwitterButton.target = ('_blank');
+      makeTwitterButton.innerHTML = '結果をTwitterでシェアする';
+
+      makeTwitterButton.classList.add('chart-description');
+      document.getElementById('button-add').appendChild(makeTwitterButton);
+    }
+
+    function ResultBtn(){
+      //結果にもう一回シミュレートするボタンも生成しておく
+      var reSimulateButton = document.createElement('a');
+      var buttonAdd = document.getElementById('button-add');
+
+      reSimulateButton.id = ('resimulate-button');
+      reSimulateButton.innerHTML = 'もう一回シミュレートする';
+      reSimulateButton.classList.add('chart-description');
+      buttonAdd.appendChild(reSimulateButton);
+    }
+
+</script>
+
+</html>
